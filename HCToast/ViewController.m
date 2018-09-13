@@ -67,7 +67,7 @@
 }
 
 -(void)touchAction4:(id)sender{
-    [[HCToast shareInstance] showTopToast:@"您的咖啡已制作完成，等待送达！您的咖啡已制作完成，等待送达！您的咖啡已制作完成，等待送达！"];
+    [[HCToast shareInstance] showTopToast:@"您的咖啡已制作完成，等待送达！"];
 }
 
 -(void)touchAction5:(id)sender{

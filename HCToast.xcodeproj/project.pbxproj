@@ -14,6 +14,10 @@
 		A0675036214904E000EEF035 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0675034214904E000EEF035 /* LaunchScreen.storyboard */; };
 		A0675039214904E000EEF035 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A0675038214904E000EEF035 /* main.m */; };
 		A06750422149063A00EEF035 /* HCToast.m in Sources */ = {isa = PBXBuildFile; fileRef = A06750412149063A00EEF035 /* HCToast.m */; };
+		A06750462149FF1700EEF035 /* HCToast_toast_success@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A06750442149FF1700EEF035 /* HCToast_toast_success@2x.png */; };
+		A06750472149FF1700EEF035 /* HCToast_toast_success@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = A06750452149FF1700EEF035 /* HCToast_toast_success@3x.png */; };
+		A067504A214A053600EEF035 /* HCToast_toast_error@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = A0675048214A053600EEF035 /* HCToast_toast_error@3x.png */; };
+		A067504B214A053600EEF035 /* HCToast_toast_error@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A0675049214A053600EEF035 /* HCToast_toast_error@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +33,10 @@
 		A0675038214904E000EEF035 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A06750402149063A00EEF035 /* HCToast.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCToast.h; sourceTree = "<group>"; };
 		A06750412149063A00EEF035 /* HCToast.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HCToast.m; sourceTree = "<group>"; };
+		A06750442149FF1700EEF035 /* HCToast_toast_success@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "HCToast_toast_success@2x.png"; sourceTree = "<group>"; };
+		A06750452149FF1700EEF035 /* HCToast_toast_success@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "HCToast_toast_success@3x.png"; sourceTree = "<group>"; };
+		A0675048214A053600EEF035 /* HCToast_toast_error@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "HCToast_toast_error@3x.png"; sourceTree = "<group>"; };
+		A0675049214A053600EEF035 /* HCToast_toast_error@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "HCToast_toast_error@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,10 +86,22 @@
 		A067503F2149057100EEF035 /* HCToast */ = {
 			isa = PBXGroup;
 			children = (
+				A06750432149FF1700EEF035 /* Resources */,
 				A06750402149063A00EEF035 /* HCToast.h */,
 				A06750412149063A00EEF035 /* HCToast.m */,
 			);
 			path = HCToast;
+			sourceTree = "<group>";
+		};
+		A06750432149FF1700EEF035 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A0675049214A053600EEF035 /* HCToast_toast_error@2x.png */,
+				A0675048214A053600EEF035 /* HCToast_toast_error@3x.png */,
+				A06750442149FF1700EEF035 /* HCToast_toast_success@2x.png */,
+				A06750452149FF1700EEF035 /* HCToast_toast_success@3x.png */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -142,8 +162,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				A0675036214904E000EEF035 /* LaunchScreen.storyboard in Resources */,
+				A06750462149FF1700EEF035 /* HCToast_toast_success@2x.png in Resources */,
+				A067504B214A053600EEF035 /* HCToast_toast_error@2x.png in Resources */,
+				A06750472149FF1700EEF035 /* HCToast_toast_success@3x.png in Resources */,
 				A0675033214904E000EEF035 /* Assets.xcassets in Resources */,
 				A0675031214904DC00EEF035 /* Main.storyboard in Resources */,
+				A067504A214A053600EEF035 /* HCToast_toast_error@3x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

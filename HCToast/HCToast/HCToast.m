@@ -10,8 +10,17 @@
 
 #define UI_SCREEN_WIDTH         ([[UIScreen mainScreen] bounds].size.width)
 #define UI_SCREEN_HEIGHT        ([[UIScreen mainScreen] bounds].size.height)
+#define HCToast_iPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? ([[UIScreen mainScreen] currentMode].size.height == 2436) : NO)
+#define HCToast_NAVIGATION_STATUS_BAR_HEIGHT (HCToast_iPhoneX?88.0f:64.0f)
 
 #define Toast_Duration_Normal 2.0f //默认逗留时长
+
+typedef NS_ENUM(NSInteger , HCToastType) {
+    HCToastType_Toast = 0,
+    HCToastType_SuccessIconToast = 1,
+    HCToastType_ErrorIconToast = 2,
+    HCToastType_TopToast = 3,
+};
 
 static const CGFloat Interval_Size_5 = 5.0f;
 static const CGFloat Interval_Size_20 = 20.0f;
@@ -23,6 +32,7 @@ static const CGFloat Normal_Size_Width = 260.0f;
 
 @interface HCToastView()
 @property (strong,nonatomic) UILabel *textLabel;
+@property (strong,nonatomic) UIImageView *tipsImageView;
 @end
 
 @implementation HCToastView
@@ -34,7 +44,19 @@ static const CGFloat Normal_Size_Width = 260.0f;
     return self;
 }
 
+
+/**
+ 显示Toast
+
+ @param message 提示文本
+ */
 -(void)setTextMessage:(NSString *)message{
+    for (UIView *view in self.subviews) {
+        if ([view isKindOfClass:[UIImageView class]]) {
+            [view removeFromSuperview];
+        }
+    }
+    
     self.textLabel.text = message;
     CGRect rect =[self.textLabel.text  boundingRectWithSize:CGSizeMake(Normal_Size_Width, MAXFLOAT)
                                                     options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
@@ -52,6 +74,66 @@ static const CGFloat Normal_Size_Width = 260.0f;
     self.frame = CGRectMake(x, y, width, height);
 }
 
+
+/**
+ 显示带有Icon的Toast提示
+
+ @param message 提示文本
+ */
+-(void)setIconText:(NSString *)message type:(HCToastType)type{
+    self.textLabel.text = message;
+    
+    UIImage *tipsIcon = nil;
+    if (type == HCToastType_SuccessIconToast) {
+        tipsIcon = [UIImage imageNamed:@"HCToast_toast_success"];
+    }else if (type == HCToastType_ErrorIconToast){
+        tipsIcon = [UIImage imageNamed:@"HCToast_toast_error"];
+    }
+    
+    
+    CGRect rect = [self.textLabel.text boundingRectWithSize:CGSizeMake(Normal_Size_Width, MAXFLOAT)
+                                                    options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
+                                                 attributes:@{NSFontAttributeName:self.textLabel.font}
+                                                    context:nil];
+    CGFloat width = rect.size.width + Interval_Size_30*2;
+    CGFloat height = rect.size.height + Interval_Size_20 + tipsIcon.size.height + Interval_Size_5*2;
+    CGFloat x = (UI_SCREEN_WIDTH - width) / 2;
+    CGFloat y = (UI_SCREEN_HEIGHT - height) / 2;
+    self.layer.masksToBounds = YES;
+    self.layer.cornerRadius = 2;
+    self.frame = CGRectMake(x, y, width, height);
+    
+    CGFloat iconX = (self.frame.size.width - tipsIcon.size.width)/2;
+    self.tipsImageView.frame = CGRectMake(iconX, Interval_Size_20/2, tipsIcon.size.width, tipsIcon.size.height);
+    self.tipsImageView.image = tipsIcon;
+    [self addSubview:self.tipsImageView];
+    
+    self.textLabel.frame = CGRectMake(Interval_Size_30, self.tipsImageView.frame.origin.y + self.tipsImageView.frame.size.height + Interval_Size_5, rect.size.width, rect.size.height);
+    [self addSubview:self.textLabel];
+    
+}
+
+-(void)setTopText:(NSString *)message offsetY:(CGFloat)offsetY{
+    for (UIView *view in self.subviews) {
+        if ([view isKindOfClass:[UIImageView class]]) {
+            [view removeFromSuperview];
+        }
+    }
+    
+    self.textLabel.text = message;
+    CGFloat normalWidth = UI_SCREEN_WIDTH - 2*Interval_Size_25;
+    CGRect rect =[self.textLabel.text  boundingRectWithSize:CGSizeMake(normalWidth, MAXFLOAT)
+                                                    options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
+                                                 attributes:@{NSFontAttributeName:self.textLabel.font} context:nil];
+    self.textLabel.textAlignment = (rect.size.width>normalWidth) ? NSTextAlignmentCenter : NSTextAlignmentLeft;
+    self.textLabel.frame = CGRectMake(Interval_Size_25/2, Interval_Size_20/2, rect.size.width, rect.size.height);
+    [self addSubview:self.textLabel];
+    CGFloat height = rect.size.height+Interval_Size_20;
+    self.layer.cornerRadius = 0;
+    self.layer.masksToBounds = YES;
+    self.frame = CGRectMake(0.0f, offsetY > 0 ? offsetY : HCToast_NAVIGATION_STATUS_BAR_HEIGHT, UI_SCREEN_WIDTH, height);
+}
+
 #pragma mark - Lazy load
 @synthesize textLabel = _textLabel;
 -(UILabel *)textLabel{
@@ -66,6 +148,15 @@ static const CGFloat Normal_Size_Width = 260.0f;
     return _textLabel;
 }
 
+@synthesize tipsImageView = _tipsImageView;
+-(UIImageView *)tipsImageView{
+    if (!_tipsImageView) {
+        _tipsImageView = [[UIImageView alloc] init];
+        _tipsImageView.backgroundColor = [UIColor clearColor];
+    }
+    return _tipsImageView;
+}
+
 @end
 
 
@@ -74,6 +165,8 @@ static const CGFloat Normal_Size_Width = 260.0f;
 @interface HCToast()
 @property (strong,nonatomic) HCToastView *toastView;
 @property (assign,nonatomic) NSTimeInterval duration;
+@property (assign,nonatomic) BOOL active;//是否活跃
+@property (assign,nonatomic) CGFloat top_offsetY;
 @end
 
 @implementation HCToast
@@ -91,26 +184,85 @@ static const CGFloat Normal_Size_Width = 260.0f;
     self = [super init];
     if (self) {
         self.toastView = [[HCToastView alloc] init];
+        self.active = NO;
+        self.top_offsetY = 0;
     }
     return self;
 }
 
 -(void)showToast:(NSString *)message{
-    [[HCToast shareInstance] showToastViewWithMessage:message duration:Toast_Duration_Normal];
+    if (!_active) {
+        [[HCToast shareInstance] showToastViewWithMessage:message duration:Toast_Duration_Normal type:HCToastType_Toast];
+    }
 }
 
--(void)showToastViewWithMessage:(NSString *)message duration:(NSTimeInterval)duration{
+-(void)showSuccessIconToast:(NSString *)message{
+    if (!_active) {
+        [[HCToast shareInstance] showToastViewWithMessage:message duration:Toast_Duration_Normal type:HCToastType_SuccessIconToast];
+    }
+}
+
+-(void)showErrorIconToast:(NSString *)message{
+    if (!_active) {
+        [[HCToast shareInstance] showToastViewWithMessage:message duration:Toast_Duration_Normal type:HCToastType_ErrorIconToast];
+    }
+}
+
+-(void)showTopToast:(NSString *)message{
+    if (!_active) {
+        [[HCToast shareInstance] showToastViewWithMessage:message duration:Toast_Duration_Normal type:HCToastType_TopToast];
+    }
+}
+
+-(void)showTopToast:(NSString *)message offsetY:(CGFloat)offsetY{
+    if (!_active) {
+        self.top_offsetY = offsetY;
+        [[HCToast shareInstance] showToastViewWithMessage:message duration:Toast_Duration_Normal type:HCToastType_TopToast];
+    }
+}
+
+-(void)clearToast{
+    if (_active) {
+        [self animationForViewRemove];
+    }
+}
+
+-(void)showToastViewWithMessage:(NSString *)message duration:(NSTimeInterval)duration type:(HCToastType)type{
     if ([self isEmptyObj:message]) {
         return;
     }
+    self.active = YES;
     self.duration = duration;
     
     [[UIApplication sharedApplication].keyWindow addSubview:self.toastView];
     
     //显示
-    [self.toastView setTextMessage:message];
+    switch (type) {
+        case HCToastType_Toast:{
+            [self.toastView setTextMessage:message];
+            break;
+        }
+        case HCToastType_SuccessIconToast:{
+            [self.toastView setIconText:message type:type];
+            break;
+        }
+        case HCToastType_ErrorIconToast:{
+            [self.toastView setIconText:message type:type];
+            break;
+        }
+        case HCToastType_TopToast:{
+            [self.toastView setTopText:message offsetY:self.top_offsetY];
+            break;
+        }
+            
+        default:
+            break;
+    }
     
-    self.toastView.center = [UIApplication sharedApplication].keyWindow.center;
+    if (type != HCToastType_TopToast) {
+        self.toastView.center = [UIApplication sharedApplication].keyWindow.center;
+    }
+    
     
     //动画
     [UIView beginAnimations:nil context:nil];
@@ -133,6 +285,8 @@ static const CGFloat Normal_Size_Width = 260.0f;
 
 - (void)animationForViewRemove{
     [self.toastView removeFromSuperview];
+    self.active = NO;
+    self.top_offsetY = 0;
 }
 
 #pragma mark - Utils

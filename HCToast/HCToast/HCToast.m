@@ -15,6 +15,16 @@
 
 #define Toast_Duration_Normal 2.0f //默认逗留时长
 
+
+
+/**
+ Toast类型
+
+ - HCToastType_Toast: 普通Toast
+ - HCToastType_SuccessIconToast: 带成功图标的Toast
+ - HCToastType_ErrorIconToast: 带失败图标的Toast
+ - HCToastType_TopToast: 顶部显示Toast
+ */
 typedef NS_ENUM(NSInteger , HCToastType) {
     HCToastType_Toast = 0,
     HCToastType_SuccessIconToast = 1,
@@ -166,7 +176,7 @@ static const CGFloat Normal_Size_Width = 260.0f;
 @property (strong,nonatomic) HCToastView *toastView;
 @property (assign,nonatomic) NSTimeInterval duration;
 @property (assign,nonatomic) BOOL active;//是否活跃
-@property (assign,nonatomic) CGFloat top_offsetY;
+@property (assign,nonatomic) CGFloat top_offsetY;//顶部显示Toast偏移量
 @end
 
 @implementation HCToast
